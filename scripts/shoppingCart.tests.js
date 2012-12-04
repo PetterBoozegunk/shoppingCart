@@ -87,23 +87,27 @@
 			};
 
 		testCart.addListener("set", function (e) {
-			if (e.property === productId && e.value.name === productObj.name && e.value.price === productObj.price) {
+			if (e.property === productId && e.value.name === productObj.name && e.value.price === productObj.price.toFixed(2)) {
 				productIsSet = true;
 			}
 		});
 
 		testCart.addListener("change", function (e) {
-			if (e.property === productId && e.value.name === productObj.name && e.value.price === productObj.price) {
+			if (e.property === productId && e.value.name === productObj.name && e.value.price === productObj.price.toFixed(2)) {
 				testCartIsChanged = true;
 			}
 		});
 
-		testCart.addListener("productAdded", function () {
-			productIsAdded = true;
+		testCart.addListener("productAdded", function (e) {
+			if (e.property === productId) {
+				productIsAdded = true;
+			}
 		});
 
-		testCart.addListener("productRemoved", function () {
-			productIsRemoved = true;
+		testCart.addListener("productRemoved", function (e) {
+			if (e.property === productId) {
+				productIsRemoved = true;
+			}
 		});
 
 		testCart.addProduct(productId, productObj);
@@ -111,8 +115,8 @@
 
 		ok(productIsSet, "Something was set in testCart");
 		ok(testCartIsChanged, "testCart is changed");
-		ok(productIsAdded, "Product is added");
-		ok(productIsRemoved, "Product is removed");
+		ok(productIsAdded, "Product is added and the 'property' property on the event object is set to '" + productId + "'");
+		ok(productIsRemoved, "Product is removed and the 'property' property on the event object is set to '" + productId + "'");
 	});
 
 	module("shoppingCart: Cart updated tests");

@@ -4,18 +4,50 @@
 	var createShoppingCart,
 		util;
 
+	/* -- util -- */
 	util = {
+		getProductOptions : function (parent, options) {
+			var that = {},
+				k,
+				price = options.price ? options.price.toFixed(2) : (0).toFixed(2);
+
+			for (k in options) {
+				if (options.hasOwnProperty(k)) {
+					if (price && k === "price") {
+						that[k] = price;
+					} else {
+						that[k] = options[k];
+					}
+				}
+			}
+
+			that.parent = parent;
+
+			if (!that.price) {
+				that.price = (0).toFixed(2);
+			}
+
+			that.isProduct = true;
+			that.nbrUnits = 0;
+
+			return that;
+		},
 		addProduct : function (productId, productObj) {
-			var productInCart = this.get(productId),
-				product = productInCart || this.set(productId, productObj),
-				nbrUnits = product.get("nbrUnits") || 0,
-				price = (!productInCart && product.get("price")) ? product.get("price").toFixed(2) : (product.get("price") || (0).toFixed(2));
+			var product = this.get(productId),
+				productInCart = product,
+				options,
+				nbrUnits;
+
+			if (!productInCart) {
+				options = util.getProductOptions(this, productObj);
+				product = this.set(productId, options);
+			}
+
+			nbrUnits = product.get("nbrUnits");
 
 			nbrUnits += 1;
 
 			if (!productInCart) {
-				product.set("price", price);
-				product.set("isProduct", true);
 				this.trigger("productAdded", productId);
 			} else {
 				this.trigger("productUpdated", productId);
@@ -28,7 +60,7 @@
 		removeProduct : function (productId) {
 			delete this[productId];
 
-			this.trigger("productRemoved");
+			this.trigger("productRemoved", productId);
 
 			return this;
 		},
@@ -51,6 +83,7 @@
 			that.set("sumTotal", sumTotal.toFixed(2));
 		}
 	};
+	/* -- /util -- */
 
 	/* -- createShoppingCart -- */
 	createShoppingCart = function (options) {
