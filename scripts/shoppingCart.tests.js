@@ -194,6 +194,8 @@
 		var testCart = window.createShoppingCart(),
 			span1,
 			span2,
+			input,
+			textarea,
 			productId = "p-0001",
 			productObj = {
 				name : "Bultsax",
@@ -222,6 +224,22 @@
 		strictEqual(product.get("elements").get("nbrUnits")[0].innerHTML, product.get("nbrUnits").toString(), "When another product with the same id gets added the span.nbrUnits innerHTML is updated to '" + product.get("nbrUnits") + "'");
 		strictEqual(testCart.get("elements").get("sumTotal")[0].innerHTML, testCart.get("sumTotal"), "When another product with the same id gets added the span.sumTotal innerHTML is updated to '" + testCart.get("sumTotal") + "'");
 
+		input = document.createElement("input");
+		input.type = "text";
+		input.className = "nbrUnits";
+		product.addPropertyElement("nbrUnits", input);
+
+		testCart.addProduct(productId);
+
+		strictEqual(product.get("elements").get("nbrUnits")[1].value, product.get("nbrUnits").toString(), "When another product with the same id gets added the input.nbrUnits[value] is updated to '" + product.get("nbrUnits") + "'");
+
+		textarea = document.createElement("textarea");
+		textarea.className = "nbrUnits";
+		product.addPropertyElement("nbrUnits", textarea);
+
+		testCart.addProduct(productId);
+
+		strictEqual(product.get("elements").get("nbrUnits")[2].value, product.get("nbrUnits").toString(), "When another product with the same id gets added the textarea.nbrUnits[value] is updated to '" + product.get("nbrUnits") + "'");
 	});
 
 }(window));

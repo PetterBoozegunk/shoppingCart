@@ -23,7 +23,11 @@
 					l = propertyElements.length;
 
 					for (i = 0; i < l; i += 1) {
-						propertyElements[i].innerHTML = value;
+						if (propertyElements[i].tagName === "INPUT") {
+							propertyElements[i].setAttribute("value", value);
+						} else {
+							propertyElements[i].innerHTML = value;
+						}
 					}
 				}
 			}
@@ -37,7 +41,11 @@
 				elementArray = elements.set(propertyName, []);
 			}
 
-			element.innerHTML = currentValue;
+			if (element.tagName === "INPUT") {
+				element.setAttribute("value", currentValue);
+			} else {
+				element.innerHTML = currentValue;
+			}
 
 			elementArray.push(element);
 		},
@@ -65,9 +73,7 @@
 			that.isProduct = true;
 			that.nbrUnits = 0;
 
-			that.addPropertyElement = function (propertyName, element) {
-				util.addPropertyElement.apply(this, [propertyName, element]);
-			};
+			that.addPropertyElement = util.addPropertyElement;
 
 			return that;
 		},
@@ -138,17 +144,9 @@
 		that.set("elements", {});
 		that.sumTotal = 0;
 
-		that.addProduct = function (productId, productObj) {
-			return util.addProduct.apply(that, [productId, productObj]);
-		};
-
-		that.removeProduct = function (productId) {
-			return util.removeProduct.apply(that, [productId]);
-		};
-
-		that.addPropertyElement = function (propertyName, element) {
-			util.addPropertyElement.apply(that, [propertyName, element]);
-		};
+		that.addProduct = util.addProduct;
+		that.removeProduct = util.removeProduct;
+		that.addPropertyElement = util.addPropertyElement;
 
 		return that;
 	};
