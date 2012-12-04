@@ -189,4 +189,39 @@
 		strictEqual(testCart.get(productId).get("price"), (0).toFixed(2), "The price property (on a product) is set to " + (0).toFixed(2) + " if it does NOT have a price");
 	});
 
+	module("shoppingCart: Add and update element (value || innreHTML) tests");
+	test("It's possible to add an HTMLelement reference to a product that has been added to the cart", function () {
+		var testCart = window.createShoppingCart(),
+			span1,
+			span2,
+			productId = "p-0001",
+			productObj = {
+				name : "Bultsax",
+				price : 1.35
+			},
+			product = testCart.addProduct(productId, productObj).get(productId);
+
+		ok(product.addPropertyElement && typeof product.addPropertyElement === "function", "a product object has a 'addElementReference' method");
+		ok(testCart.addPropertyElement && typeof testCart.addPropertyElement === "function", "a shoppingCart object has a 'addElementReference' method");
+
+		span1 = document.createElement("span");
+		span1.className = "nbrUnits";
+		product.addPropertyElement("nbrUnits", span1);
+
+		span2 = document.createElement("span");
+		span2.className = "sumTotal";
+		testCart.addPropertyElement("sumTotal", span2);
+
+		ok(product.get("elements").get("nbrUnits") instanceof Array, "The reference object is an Array");
+
+		strictEqual(product.get("elements").get("nbrUnits")[0], span1, "If an added element has a cssClass corresponding to a property on the productObject that element is added to that element[cssClass] array");
+
+		strictEqual(product.get("elements").get("nbrUnits")[0].innerHTML, "1", "The span.nbrUnits gets the value of the product.nbrUnits");
+
+		testCart.addProduct(productId);
+		strictEqual(product.get("elements").get("nbrUnits")[0].innerHTML, product.get("nbrUnits").toString(), "When another product with the same id gets added the span.nbrUnits innerHTML is updated to '" + product.get("nbrUnits") + "'");
+		strictEqual(testCart.get("elements").get("sumTotal")[0].innerHTML, testCart.get("sumTotal"), "When another product with the same id gets added the span.sumTotal innerHTML is updated to '" + testCart.get("sumTotal") + "'");
+
+	});
+
 }(window));

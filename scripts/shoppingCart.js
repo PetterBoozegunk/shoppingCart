@@ -6,6 +6,41 @@
 
 	/* -- util -- */
 	util = {
+		updateElements : function (e) {
+			var that = e.targetObject,
+				property = e.property,
+				value = that.get(property),
+				elements = that.get("elements"),
+				propertyElements,
+				i,
+				l;
+
+			if (elements && property !== "elements") {
+				propertyElements = elements.get(property);
+
+				if (propertyElements && propertyElements.length) {
+
+					l = propertyElements.length;
+
+					for (i = 0; i < l; i += 1) {
+						propertyElements[i].innerHTML = value;
+					}
+				}
+			}
+		},
+		addPropertyElement : function (propertyName, element) {
+			var elements = this.get("elements"),
+				elementArray = elements.get(propertyName),
+				currentValue = this.get(propertyName);
+
+			if (!elementArray) {
+				elementArray = elements.set(propertyName, []);
+			}
+
+			element.innerHTML = currentValue;
+
+			elementArray.push(element);
+		},
 		getProductOptions : function (parent, options) {
 			var that = {},
 				k,
@@ -30,6 +65,10 @@
 			that.isProduct = true;
 			that.nbrUnits = 0;
 
+			that.addPropertyElement = function (propertyName, element) {
+				util.addPropertyElement.apply(this, [propertyName, element]);
+			};
+
 			return that;
 		},
 		addProduct : function (productId, productObj) {
@@ -41,6 +80,7 @@
 			if (!productInCart) {
 				options = util.getProductOptions(this, productObj);
 				product = this.set(productId, options);
+				product.set("elements", {});
 			}
 
 			nbrUnits = product.get("nbrUnits");
@@ -90,10 +130,12 @@
 		var that = window.createListenerObject(options);
 
 		/* -- eventListeners -- */
-		that.addListener("change", "nbrUnits", {context: that}, util.getSumTotal);
 		that.addListener("productRemoved", {context: that}, util.getSumTotal);
+		that.addListener("change", {context: that}, util.getSumTotal);
+		that.addListener("change", {context: that}, util.updateElements);
 		/* -- /eventListeners -- */
 
+		that.set("elements", {});
 		that.sumTotal = 0;
 
 		that.addProduct = function (productId, productObj) {
@@ -102,6 +144,10 @@
 
 		that.removeProduct = function (productId) {
 			return util.removeProduct.apply(that, [productId]);
+		};
+
+		that.addPropertyElement = function (propertyName, element) {
+			util.addPropertyElement.apply(that, [propertyName, element]);
 		};
 
 		return that;
