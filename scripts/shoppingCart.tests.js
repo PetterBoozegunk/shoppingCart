@@ -1,7 +1,9 @@
 ﻿(function (window) {
 	"use strict";
 
-	var qUnit = window.QUnit,
+	var $ = window.jQuery,
+		util,
+		qUnit = window.QUnit,
 		module = qUnit.module,
 		test = qUnit.test,
 		ok = qUnit.ok,
@@ -9,6 +11,99 @@
 //		asyncTest = qUnit.asyncTest,
 //		start = qUnit.start,
 //		stop = qUnit.stop;
+
+	util = {
+		productList : {
+			"p-0001" : {
+				name : "Golfbil",
+				description : "En fin golfbil",
+				price : 12345.68
+			},
+			"p-0002" : {
+				name : "Gräsklippare",
+				description : "En fin gräsklippare",
+				price : 5689.50
+			},
+			"p-0003" : {
+				name : "Betongblock",
+				description : "Ett fint betongblock",
+				price : 287
+			},
+			"p-0004" : {
+				name : "Kaffekokare",
+				description : "En fin kaffekokare",
+				price : 99
+			},
+			"p-0005" : {
+				name : "Bit",
+				description : "En fin bit",
+				price : 8
+			}
+		},
+		getTds : function (id, item) {
+			var tds = "<td class=\"id\">" + id + "</td>",
+				k;
+
+			for (k in item) {
+				if (item.hasOwnProperty(k)) {
+					if (k === "price") {
+						tds += "<td class=\"" + k + "\">" + parseFloat(item[k]).toFixed(2) + " kr</td>";
+					} else {
+						tds += "<td class=\"" + k + "\">" + item[k] + "</td>";
+					}
+				}
+			}
+
+			return tds;
+		},
+		getTrs : function () {
+			var pl = util.productList,
+				tds,
+				k,
+				trs = "";
+
+			for (k in pl) {
+				if (pl.hasOwnProperty(k)) {
+					tds = util.getTds(k, pl[k]);
+					trs += "<tr class=\"id-" + k + "\">" + tds + "</tr>";
+				}
+			}
+
+			return trs;
+		},
+		getTBody : function () {
+			var trs = util.getTrs(),
+				tbody = "<tbody>" + trs + "</tbody>";
+
+			return tbody;
+		},
+		getThs : function () {
+			var ths = "<th>Id</th>",
+				header = util.productList["p-0001"],
+				k;
+
+			for (k in header) {
+				if (header.hasOwnProperty(k)) {
+					ths += "<th class=\"" + k + "\">" + k + "</th>";
+				}
+			}
+
+			return ths;
+		},
+		getTHead : function () {
+			var ths = util.getThs(),
+				thead = "<thead><tr>" + ths + "</tr></thead>";
+
+			return thead;
+		},
+		createProductTable : function (id) {
+			var thead = util.getTHead(),
+				tbody = util.getTBody(),
+				table = $("<table id=\"" + (id || "test") + "\">" + thead + tbody + "</table>");
+
+			return table;
+		}
+	};
 
 	module("shoppingCart need jQuery 1.8 or higher");
 	test("There is jQuery 1.8 or higher", function () {
@@ -190,7 +285,7 @@
 	});
 
 	module("shoppingCart: Add and update element (value || innreHTML) tests");
-	test("It's possible to add an HTMLelement reference to a product that has been added to the cart", function () {
+	test("It's possible to add an HTMLelement reference to a product that has been added to the cart (test 1)", function () {
 		var testCart = window.createShoppingCart(),
 			span1,
 			span2,
@@ -240,6 +335,50 @@
 		testCart.addProduct(productId);
 
 		strictEqual(product.get("elements").get("nbrUnits")[2].value, product.get("nbrUnits").toString(), "When another product with the same id gets added the textarea.nbrUnits[value] is updated to '" + product.get("nbrUnits") + "'");
+	});
+
+	test("It's possible to add more products with the same productId as one already in the cart by increasing the nbrUnits property on a product", function () {
+		var testCart = window.createShoppingCart(),
+			productId = "someId-0001",
+			productObj = {
+				name : "Snöskottare",
+				price : 1000
+			},
+			product,
+			nbrUnitsSpan,
+			sumTotalSpan;
+
+		testCart.addProduct(productId, productObj);
+
+		product = testCart.get(productId);
+
+		nbrUnitsSpan = document.createElement("span");
+		sumTotalSpan = document.createElement("span");
+
+		product.addPropertyElement("nbrUnits", nbrUnitsSpan);
+		testCart.addPropertyElement("sumTotal", sumTotalSpan);
+
+		product.set("nbrUnits", 2);
+
+		strictEqual(product.get("nbrUnits"), 2, "The product nbrUnits property is set to 2");
+		strictEqual(nbrUnitsSpan.innerHTML, "2", "The nbrUnitsSpan innerHTML is set to 2");
+
+		strictEqual(testCart.get("sumTotal"), (2000).toFixed(2), "The product nbrUnits property is set to " + (2000).toFixed(2));
+		strictEqual(sumTotalSpan.innerHTML, (2000).toFixed(2), "The sumTotalSpan innerHTML is set to " + (2000).toFixed(2));
+
+		product.set("nbrUnits", 1);
+
+		strictEqual(product.get("nbrUnits"), 1, "The product nbrUnits property is set to 1");
+		strictEqual(nbrUnitsSpan.innerHTML, "1", "The nbrUnitsSpan innerHTML is set to 1");
+
+		strictEqual(testCart.get("sumTotal"), (1000).toFixed(2), "The product nbrUnits property is set to " + (1000).toFixed(2));
+		strictEqual(sumTotalSpan.innerHTML, (1000).toFixed(2), "The sumTotalSpan innerHTML is set to " + (1000).toFixed(2));
+
+		product.set("nbrUnits", 0);
+
+		ok(!testCart.get(productId), "When nbrUnits on a product is set to 0 the product is removed from the cart");
+		strictEqual(testCart.get("sumTotal"), (0).toFixed(2), "The 'sumTotal' property is set to " + (0).toFixed(2) + " when there is no products in the cart");
+		strictEqual(sumTotalSpan.innerHTML, (0).toFixed(2), "The sumTotalSpan innerHTML is set to " + (0).toFixed(2) + " when there is no products in the cart");
 	});
 
 }(window));

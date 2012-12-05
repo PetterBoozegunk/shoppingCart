@@ -77,6 +77,15 @@
 
 			return that;
 		},
+		removeProductWhenNbrUnitsIsZero : function (e) {
+			if (e.value === 0) {
+				var data = e.data,
+					that = data.context,
+					productId = data.productId;
+
+				that.removeProduct(productId);
+			}
+		},
 		addProduct : function (productId, productObj) {
 			var product = this.get(productId),
 				productInCart = product,
@@ -87,6 +96,8 @@
 				options = util.getProductOptions(this, productObj);
 				product = this.set(productId, options);
 				product.set("elements", {});
+
+				product.addListener("change", "nbrUnits", {context: this, productId: productId}, util.removeProductWhenNbrUnitsIsZero);
 			}
 
 			nbrUnits = product.get("nbrUnits");
