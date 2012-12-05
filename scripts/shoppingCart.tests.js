@@ -1,9 +1,7 @@
 ﻿(function (window) {
 	"use strict";
 
-	var $ = window.jQuery,
-		util,
-		qUnit = window.QUnit,
+	var qUnit = window.QUnit,
 		module = qUnit.module,
 		test = qUnit.test,
 		ok = qUnit.ok,
@@ -11,109 +9,6 @@
 //		asyncTest = qUnit.asyncTest,
 //		start = qUnit.start,
 //		stop = qUnit.stop;
-
-	util = {
-		productList : {
-			"p-0001" : {
-				name : "Golfbil",
-				description : "En fin golfbil",
-				price : 12345.68
-			},
-			"p-0002" : {
-				name : "Gräsklippare",
-				description : "En fin gräsklippare",
-				price : 5689.50
-			},
-			"p-0003" : {
-				name : "Betongblock",
-				description : "Ett fint betongblock",
-				price : 287
-			},
-			"p-0004" : {
-				name : "Kaffekokare",
-				description : "En fin kaffekokare",
-				price : 99
-			},
-			"p-0005" : {
-				name : "Bit",
-				description : "En fin bit",
-				price : 8
-			}
-		},
-		getTds : function (id, item) {
-			var tds = "<td class=\"id\">" + id + "</td>",
-				k;
-
-			for (k in item) {
-				if (item.hasOwnProperty(k)) {
-					if (k === "price") {
-						tds += "<td class=\"" + k + "\">" + parseFloat(item[k]).toFixed(2) + " kr</td>";
-					} else {
-						tds += "<td class=\"" + k + "\">" + item[k] + "</td>";
-					}
-				}
-			}
-
-			return tds;
-		},
-		getTrs : function () {
-			var pl = util.productList,
-				tds,
-				k,
-				trs = "";
-
-			for (k in pl) {
-				if (pl.hasOwnProperty(k)) {
-					tds = util.getTds(k, pl[k]);
-					trs += "<tr class=\"id-" + k + "\">" + tds + "</tr>";
-				}
-			}
-
-			return trs;
-		},
-		getTBody : function () {
-			var trs = util.getTrs(),
-				tbody = "<tbody>" + trs + "</tbody>";
-
-			return tbody;
-		},
-		getThs : function () {
-			var ths = "<th>Id</th>",
-				header = util.productList["p-0001"],
-				k;
-
-			for (k in header) {
-				if (header.hasOwnProperty(k)) {
-					ths += "<th class=\"" + k + "\">" + k + "</th>";
-				}
-			}
-
-			return ths;
-		},
-		getTHead : function () {
-			var ths = util.getThs(),
-				thead = "<thead><tr>" + ths + "</tr></thead>";
-
-			return thead;
-		},
-		createProductTable : function (id) {
-			var thead = util.getTHead(),
-				tbody = util.getTBody(),
-				table = $("<table id=\"" + (id || "test") + "\">" + thead + tbody + "</table>");
-
-			return table;
-		}
-	};
-
-	module("shoppingCart need jQuery 1.8 or higher");
-	test("There is jQuery 1.8 or higher", function () {
-		var jq = window.jQuery,
-			fn = jq ? jq.fn : null,
-			version = fn ? parseFloat(fn.jquery.match(/^(\d+\.\d)/)) : null;
-
-		ok(window.jQuery, "There is some kind of jQuery");
-		ok(version >= 1.8, "The jQuery version is 1.8 or higher");
-	});
 
 	module("shoppingCart: Basic tests");
 	test("There is a global 'createShoppingCart' function that returns something that is not undefined or window", function () {
