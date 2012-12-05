@@ -1,7 +1,8 @@
 ﻿(function (window) {
 	"use strict";
 
-	var qUnit = window.QUnit,
+//	var util,
+	var	qUnit = window.QUnit,
 		module = qUnit.module,
 		test = qUnit.test,
 		ok = qUnit.ok,
@@ -9,6 +10,70 @@
 //		asyncTest = qUnit.asyncTest,
 //		start = qUnit.start,
 //		stop = qUnit.stop;
+
+//	util = {
+//		trim : function (str) {
+//			return str.replace(/(^\s+|\s+$)/g, "");
+//		},
+//		cookie : {
+//			get : function (cookieName) {
+//				var cookies = document.cookie.split(";"),
+//					i,
+//					l = cookies.length,
+//					ret = "",
+//					split,
+//					name,
+//					value;
+
+//				for (i = 0; i < l ; i += 1) {
+//					split = util.trim(cookies[i]).split("=");
+//					name = split[0];
+//					value = split[1];
+
+//					if (name === cookieName) {
+//						ret = decodeURIComponent(value);
+//						break;
+//					}
+//				}
+
+//				return ret;
+//			},
+//			set : function (name, value, days, path) {
+//				var d = days || 365,
+//					p = path || "/",
+//					date = new Date(),
+//					expires;
+//				
+//				date.setTime(date.getTime() + (d * 24 * 60 * 60  *1000));
+//				expires = "; expires=" + date.toGMTString();
+//				
+//				document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=" + p + ";";
+//			},
+//			remove : function (cookieName) {
+//				util.cookie.set(cookieName, "", -1);
+//			}
+//		}
+//	};
+
+//	module("Util: cookies");
+//	test("It's possible to add, change and remove cookies", function () {
+//		var cookie;
+
+//		util.cookie.set("testCookie", "fantastic");
+//		ok(document.cookie.match(/(^|\s|;)testCookie\=fantastic(;|$)/), "The 'testCookie' cookie is set to 'fantastic'");
+
+//		cookie = util.cookie.get("testCookie");
+//		strictEqual(cookie, "fantastic", "It's possible to get a cookie (test 1)");
+
+//		util.cookie.set("testCookie", "0001=3;0002=2;");
+
+//		cookie = util.cookie.get("testCookie");
+//		strictEqual(cookie, "0001=3;0002=2;", "It's possible to get a cookie (test 2)");
+
+//		util.cookie.remove("testCookie");
+//		cookie = util.cookie.get("testCookie");
+//		strictEqual(cookie, "", "It's possible to remove a cookie");
+//	});
 
 	module("shoppingCart: Basic tests");
 	test("There is a global 'createShoppingCart' function that returns something that is not undefined or window", function () {
@@ -275,5 +340,44 @@
 		strictEqual(testCart.get("sumTotal"), (0).toFixed(2), "The 'sumTotal' property is set to " + (0).toFixed(2) + " when there is no products in the cart");
 		strictEqual(sumTotalSpan.innerHTML, (0).toFixed(2), "The sumTotalSpan innerHTML is set to " + (0).toFixed(2) + " when there is no products in the cart");
 	});
+
+//	module("shoppingCart: Cookie tests");
+//	test("When a product is added, removed or the nbrUnits property on a product is changed the cart cookie is added, updated or removed", function () {
+//		var cookie,
+//			testCart = window.createShoppingCart(),
+//			productId = "someId-0001",
+//			productObj = {
+//				name : "Snöskottare",
+//				price : 1000
+//			},
+//			productId2 = "someId-0002",
+//			productObj2 = {
+//				name : "Motorhuv",
+//				price : 400
+//			};
+
+//		util.cookie.remove("cart");
+
+//		testCart.addProduct(productId, productObj);
+//		cookie = util.cookie.get("cart");
+//		strictEqual(cookie, "someId-0001=1;", "The product was added to the cart cookie");
+
+//		testCart.addProduct(productId);
+//		cookie = util.cookie.get("cart");
+//		strictEqual(cookie, "someId-0001=2;", "The cart cookie was changed");
+
+//		testCart.addProduct(productId2, productObj2);
+//		cookie = util.cookie.get("cart");
+//		strictEqual(cookie, "someId-0001=2;someId-0002=1;", "It's possible to add more than one product to the cookie");
+
+//		testCart.removeProduct(productId2);
+//		cookie = util.cookie.get("cart");
+//		strictEqual(cookie, "someId-0001=2;", "When a product is removed from the cart the cookie is updated accordingly");
+
+//		testCart.removeProduct(productId);
+//		cookie = util.cookie.get("cart");
+//		strictEqual(cookie, "", "When the cart is empty the cart cookie is empty");
+//		strictEqual((/cart=;/).test(document.cookie), false, "When the cart is empty the cart cookie is removed");
+//	});
 
 }(window));
