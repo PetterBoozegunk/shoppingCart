@@ -178,21 +178,27 @@
 		strictEqual(testCart.get(productId).get("price"), (0).toFixed(2), "The price property (on a product) is set to " + (0).toFixed(2) + " if it does NOT have a price");
 	});
 
+	test("A shoppingcart gets a 'unitsTotal' property", function () {
+		var testCart = window.createShoppingCart(),
+			productId = "p-0001",
+			productObj = {
+				name : "Bultsax",
+				price : 10
+			};
+
+		strictEqual(testCart.get("unitsTotal"), 0, "The 'unitsTotal' property is set to 0");
+
+		testCart.addProduct(productId, productObj);
+		strictEqual(testCart.get("unitsTotal"), 1, "The 'unitsTotal' property is set to 1");
+
+		testCart.addProduct("p-0002", {
+			name : "Dumstrut",
+			price : 10
+		});
+
+		testCart.get("p-0002").set("nbrUnits", 30);
+
+		strictEqual(testCart.get("unitsTotal"), 31, "The 'unitsTotal' property is set to 31");
+	});
+
 }(window));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

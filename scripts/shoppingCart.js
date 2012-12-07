@@ -76,6 +76,22 @@
 
 			return this;
 		},
+		getUnitsTotal : function (e) {
+			var that = e.data.context,
+				k,
+				units,
+				nbrUnits = 0;
+
+			for (k in that) {
+				if (that.hasOwnProperty(k) && that[k].isProduct === true) {
+					units = that[k].get("nbrUnits");
+
+					nbrUnits += units;
+				}
+			}
+
+			that.set("unitsTotal", nbrUnits);
+		},
 		getSumTotal : function (e) {
 			var that = e.data.context,
 				k,
@@ -93,6 +109,10 @@
 			}
 
 			that.set("sumTotal", sumTotal.toFixed(2));
+		},
+		updateCart : function (e) {
+			util.getUnitsTotal(e);
+			util.getSumTotal(e);
 		}
 	};
 	/* -- /util -- */
@@ -102,10 +122,11 @@
 		var shoppingCart = window.createListenerObject(options);
 
 		/* -- eventListeners -- */
-		shoppingCart.addListener("productRemoved", {context: shoppingCart}, util.getSumTotal);
-		shoppingCart.addListener("change", {context: shoppingCart}, util.getSumTotal);
+		shoppingCart.addListener("productRemoved", {context: shoppingCart}, util.updateCart);
+		shoppingCart.addListener("change", {context: shoppingCart}, util.updateCart);
 		/* -- /eventListeners -- */
 
+		shoppingCart.unitsTotal = 0;
 		shoppingCart.sumTotal = 0;
 
 		shoppingCart.addProduct = util.addProduct;
