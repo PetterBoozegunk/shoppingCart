@@ -13,20 +13,14 @@
 
 			for (k in options) {
 				if (options.hasOwnProperty(k)) {
-					if (price && k === "price") {
-						productOptions[k] = price;
-					} else {
+					if (k !== "price") {
 						productOptions[k] = options[k];
 					}
 				}
 			}
-
+				
+			productOptions.price = price;
 			productOptions.parent = parent;
-
-			if (!productOptions.price) {
-				productOptions.price = (0).toFixed(2);
-			}
-
 			productOptions.isProduct = true;
 			productOptions.nbrUnits = 0;
 
